@@ -75,7 +75,7 @@ def motor_control(shares):
             Kp_b = usbvcp.readline()
             
             if(Kp_b != None):
-                
+                print("Recieved message!")
                 Kp = float(Kp_b)
                     
                 print(Kp)
@@ -131,6 +131,13 @@ def motor_control(shares):
                                 # SS achieved, exit all loops
                                 statemc = 1
                                 motor1.set_duty_cycle(0)
+                                
+                                # Print csv values
+                                print("Start Data Transfer")
+                                print("Time [ms], Position [Encoder Ticks]")
+                                for i,num in enumerate(timeVals):
+                                    print(f'{num},{posVals[i]}')
+                                print("End")
                                 raise ValueError("Steady State Achieved")
                         else:
                             # SS not achieved, keep controlling that motor
@@ -140,6 +147,13 @@ def motor_control(shares):
                 if(timeVals[-1] > 2000):
                     statemc = 1
                     motor1.set_duty_cycle(0)
+                    
+                    # Print csv values
+                    print("Start Data Transfer")
+                    print("Time [ms], Position [Encoder Ticks]")
+                    for i,num in enumerate(timeVals):
+                        print(f'{num},{posVals[i]}')
+                    print("End")
                     raise ValueError("Steady State Timeout")
                 
                     
@@ -147,8 +161,44 @@ def motor_control(shares):
                 print(e)
         
         yield statemc
-        
 
+def pusher_control(shares):
+    
+    statepc = 0
+    while True:
+        if(statepc == 0):
+            #init
+            # Setup Motor Object
+            pusher = MotorDriver(pyb.Pin.board.PA10, pyb.Pin.board.PB4, pyb.Pin.board.PB5, pyb.Timer(3, freq=20000))
+            pusher.set_duty_cycle(0)
+            
+            # Setup Pusher Limit Switch
+            pusherswitch = pyb.Pin(pyb.Pin.board.PB3, pyb.Pin.IN, pull = pyb.Pin.PULL_UP)
+            
+            # Setup User input switch
+            triggerswitch = pyb.Pin(pyb.Pin.board.PC13, pyb.Pin.IN, pull = pyb.Pin.PULL_UP)
+            
+            statepc = 1
+            
+        elif(statepc == 1):
+            
+            if triggerswitch.value() == 0:
+                statepc = 2
+                
+
+        elif(statepc == 2):
+            pusher.set_duty_cycle(50)
+            if(pusherswitch.value() == 1):
+                statepc = 3
+           
+        elif(statepc == 3):
+            if pusherswitch.value() == 1:
+                pusher.set_duty_cycle(50)
+            else:
+                pusher.set_duty_cycle(0)
+                statepc = 1
+
+        yield statepc
 # This code creates a share, a queue, and two tasks, then starts the tasks. The
 # tasks run until somebody presses ENTER, at which time the scheduler stops and
 # printouts show diagnostic information about the tasks, share, and queue.
@@ -172,12 +222,14 @@ if __name__ == "__main__":
 #     task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
 #                         profile=True, trace=False, shares=(share0, q0))
 
-    motor_control = cotask.Task(motor_control, name="Motor Control Task", priority=1, period=10,
+    motor_control = cotask.Task(motor_control, name="Motor Control Task", priority=2, period=30,
                         profile=True, trace=False, shares =(share0, q0))
-#     cotask.task_list.append(task1)
-#     cotask.task_list.append(task2)
+    
+    pusher_control = cotask.Task(pusher_control, name="Pusher Motor Control Task", priority=1, period=60,
+                        profile=True, trace=False, shares =(share0, q0))
     
     cotask.task_list.append(motor_control)
+    cotask.task_list.append(pusher_control)
 
     # Run the memory garbage collector to ensure memory is as defragmented as
     # possible before the real-time scheduler is started
