@@ -1,13 +1,10 @@
 """!
-@file basic_tasks.py
-    This file contains a demonstration program that runs some tasks, an
-    inter-task shared variable, and a queue. The tasks don't really @b do
-    anything; the example just shows how these elements are created and run.
-
-@author JR Ridgely
-@date   2021-Dec-15 JRR Created from the remains of previous example
-@copyright (c) 2015-2021 by JR Ridgely and released under the GNU
-    Public License, Version 2. 
+@file main.py
+    This file contains a program that runs two separate tasks that controls two motors:
+    a positioning motor and a pusher motor. The program uses cotask.py and task_share.py
+    to execute cooperative multi-tasking between these two task at different periods.
+    The file was modified from basic_task.py from the ME405 library that was originally
+    written by Dr. Ridgely.
 """
 
 import gc
@@ -20,41 +17,12 @@ from motor_driver import MotorDriver
 from controller import PController
 
 
-# def task1_fun(shares):
-#     """!
-#     Task which puts things into a share and a queue.
-#     @param shares A list holding the share and queue used by this task
-#     """
-#     # Get references to the share and queue which have been passed to this task
-#     my_share, my_queue = shares
-# 
-#     counter = 0
-#     while True:
-#         my_share.put(counter)
-#         my_queue.put(counter)
-#         counter += 1
-# 
-#         yield 0
-# 
-# 
-# def task2_fun(shares):
-#     """!
-#     Task which takes things out of a queue and share and displays them.
-#     @param shares A tuple of a share and queue from which this task gets data
-#     """
-#     # Get references to the share and queue which have been passed to this task
-#     the_share, the_queue = shares
-# 
-#     while True:
-#         # Show everything currently in the queue and the value in the share
-#         print(f"Share: {the_share.get ()}, Queue: ", end='')
-#         while q0.any():
-#             print(f"{the_queue.get ()} ", end='')
-#         print('')
-# 
-#         yield 0
-
 def motor_control(shares):
+    """!
+    Task awaits a proportional gain to arrive over serial, and then drives a 12V Pololu 37Dx70L 50:1 Gear motor
+    connected to a nerf turret term project 180 degrees using a closed loop proportional controller class.
+    The response is recorded and sent back over Serial to be plotted on a PC side GUI.
+    """
     statemc = shares
     statemc = 0
     
@@ -163,6 +131,10 @@ def motor_control(shares):
         yield statemc
 
 def pusher_control(shares):
+    """!
+    Task that controls a pusher motor that pushes darts from a magazine to a flywheel. Motor is triggered when
+    the PC13 button is pressed on the STM32 MCU and stops moving after setting pin PB6 low.  
+    """
     
     statepc = 0
     while True:
@@ -217,10 +189,6 @@ if __name__ == "__main__":
     # allocated for state transition tracing, and the application will run out
     # of memory after a while and quit. Therefore, use tracing only for 
     # debugging and set trace to False when it's not needed
-#     task1 = cotask.Task(task1_fun, name="Task_1", priority=1, period=300,
-#                         profile=True, trace=False, shares=(share0, q0))
-#     task2 = cotask.Task(task2_fun, name="Task_2", priority=2, period=1500,
-#                         profile=True, trace=False, shares=(share0, q0))
 
     motor_control = cotask.Task(motor_control, name="Motor Control Task", priority=2, period=30,
                         profile=True, trace=False, shares =(share0, q0))
