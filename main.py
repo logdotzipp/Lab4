@@ -17,13 +17,13 @@ from motor_driver import MotorDriver
 from controller import PController
 
 
-def motor_control(shares):
+def motor_control():
     """!
     Task awaits a proportional gain to arrive over serial, and then drives a 12V Pololu 37Dx70L 50:1 Gear motor
     connected to a nerf turret term project 180 degrees using a closed loop proportional controller class.
     The response is recorded and sent back over Serial to be plotted on a PC side GUI.
     """
-    statemc = shares
+
     statemc = 0
     
     while True:
@@ -130,7 +130,7 @@ def motor_control(shares):
         
         yield statemc
 
-def pusher_control(shares):
+def pusher_control():
     """!
     Task that controls a pusher motor that pushes darts from a magazine to a flywheel. Motor is triggered when
     the PC13 button is pressed on the STM32 MCU and stops moving after setting pin PB6 low.  
@@ -191,10 +191,10 @@ if __name__ == "__main__":
     # debugging and set trace to False when it's not needed
 
     motor_control = cotask.Task(motor_control, name="Motor Control Task", priority=2, period=30,
-                        profile=True, trace=False, shares =(share0, q0))
+                        profile=True, trace=False)
     
     pusher_control = cotask.Task(pusher_control, name="Pusher Motor Control Task", priority=1, period=60,
-                        profile=True, trace=False, shares =(share0, q0))
+                        profile=True, trace=False)
     
     cotask.task_list.append(motor_control)
     cotask.task_list.append(pusher_control)
