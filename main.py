@@ -181,9 +181,9 @@ if __name__ == "__main__":
           "Press Ctrl-C to stop and show diagnostics.")
 
     # Create a share and a queue to test function and diagnostic printouts
-    share0 = task_share.Share('h', thread_protect=False, name="Share 0")
-    q0 = task_share.Queue('L', 16, thread_protect=False, overwrite=False,
-                          name="Queue 0")
+#     share0 = task_share.Share('h', thread_protect=False, name="Share 0")
+#     q0 = task_share.Queue('L', 16, thread_protect=False, overwrite=False,
+#                           name="Queue 0")
             
     # Create the tasks. If trace is enabled for any task, memory will be
     # allocated for state transition tracing, and the application will run out
