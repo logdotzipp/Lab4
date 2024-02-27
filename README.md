@@ -9,7 +9,7 @@ Figure 1: CAD model of the pusher. The limit switch featured in red enforces sin
 
  Both tasks are run on a schedule. Performance of both the turret motor and pusher motor are diminished if they are run relatively slowly. In the case of the pusher motor, the task must be ran rapidly in order to detect when the limit switch is depressed. If the the limit switch is pressed and released in between task cycles, the turret will launch more than a single dart.
 
- The control loop on the turret also has diminished performance when scheduled with a low fequency. As shown in figures 2-4, the ability of the proportional control to reach steady state is greatly diminished as the task period increases. High period (or low frequency) results in more oscillations before reaching steady state, making the turret system less controllable.
+ The control loop on the turret also has diminished performance when scheduled with a low fequency. As shown in figures 2-4, the ability of the proportional control to reach steady state is greatly diminished as the task period increases. High period (or low frequency) results in more oscillations before reaching steady state, making the turret system less stable.
 
  ![Kp1_10ms_UpdateTime](https://github.com/logdotzipp/Lab4/assets/156237159/f0a13561-b811-46ad-ba76-e8f7c3d71e42)
 
