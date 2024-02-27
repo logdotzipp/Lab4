@@ -16,5 +16,13 @@ Figure 1: CAD model of the pusher. The limit switch featured in red enforces sin
 Figure 2: Turret motion with SetPoint = 1200, Kp = 1.0, and task cycle period of 10ms
 
 
+![Kp1_50ms_UpdateTime](https://github.com/logdotzipp/Lab4/assets/156237159/3a652137-e6ce-4dec-82d9-b515b00241a1)
+
+Figure 3: Turret motion with SetPoint = 1200, Kp = 1.0, and task cycle period of 50ms. The settling time is much longer than the 10ms case.
+
+![Kp1_100ms_UpdateTime](https://github.com/logdotzipp/Lab4/assets/156237159/cd72ac0b-0702-4074-9794-e2466404e10d)
+
+Figure 4: Turret motion with SetPoint = 1200, Kp = 1.0, and task cycle period of 100ms. The system never reaches steady state, instead becoming marginally stable and oscillating indefinitely.
+
 
  
